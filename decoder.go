@@ -1,12 +1,13 @@
 package render
 
 import (
-	"encoding/json"
 	"encoding/xml"
 	"errors"
 	"io"
 	"io/ioutil"
 	"net/http"
+
+	jsoniter "github.com/json-iterator/go"
 )
 
 // Decode is a package-level variable set to our default Decoder. We do this
@@ -35,7 +36,7 @@ func DefaultDecoder(r *http.Request, v interface{}) error {
 
 func DecodeJSON(r io.Reader, v interface{}) error {
 	defer io.Copy(ioutil.Discard, r)
-	return json.NewDecoder(r).Decode(v)
+	return jsoniter.NewDecoder(r).Decode(v)
 }
 
 func DecodeXML(r io.Reader, v interface{}) error {

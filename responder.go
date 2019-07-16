@@ -3,11 +3,12 @@ package render
 import (
 	"bytes"
 	"context"
-	"encoding/json"
 	"encoding/xml"
 	"fmt"
 	"net/http"
 	"reflect"
+
+	jsoniter "github.com/json-iterator/go"
 )
 
 // M is a convenience alias for quickly building a map structure that is going
@@ -92,7 +93,7 @@ func HTML(w http.ResponseWriter, r *http.Request, v string) {
 // Content-Type as application/json.
 func JSON(w http.ResponseWriter, r *http.Request, v interface{}) {
 	buf := &bytes.Buffer{}
-	enc := json.NewEncoder(buf)
+	enc := jsoniter.NewEncoder(buf)
 	enc.SetEscapeHTML(true)
 	if err := enc.Encode(v); err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -182,7 +183,7 @@ func channelEventStream(w http.ResponseWriter, r *http.Request, v interface{}) {
 				}
 			}
 
-			bytes, err := json.Marshal(v)
+			bytes, err := jsoniter.Marshal(v)
 			if err != nil {
 				w.Write([]byte(fmt.Sprintf("event: error\ndata: {\"error\":\"%v\"}\n\n", err)))
 				if f, ok := w.(http.Flusher); ok {
